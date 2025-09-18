@@ -39,7 +39,7 @@ Para resolver este problema se evaluaron dos tecnologías propuestas en el talle
 
 ---
 
-## 🛠️ Descripción del Workflow
+## 🛠️ Descripción del Workflow y Guía de Uso
 
 El flujo completo se encuentra exportado en [`Workflow.json`](./Workflow.json).  
 A continuación se presenta su estructura, primero con una vista general y luego con el detalle nodo a nodo.
