@@ -129,6 +129,7 @@ A continuación se presenta su estructura, primero la vista general y luego el d
   - Message (HTML):
     ```html
     ⚠️ <b>Alerta USD→COP</b><br><br>
+    
     📌 <b>Precio de hoy:</b> {{$json.todayPrice}}<br>
     📌 <b>Precio de ayer:</b> {{$json.yesterdayPrice}}<br>
     📈 <b>% Cambio:</b> {{$json.changePct}} %<br>
