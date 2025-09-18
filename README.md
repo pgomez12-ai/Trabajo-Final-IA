@@ -41,23 +41,57 @@ Para resolver este problema se evaluaron dos tecnologías propuestas en el talle
 
 ## 🛠️ Descripción del Workflow
 
-El flujo completo se encuentra exportado en el archivo [`Workflow.json`](./Workflow.json).  
+El flujo completo se encuentra exportado en [`Workflow.json`](./Workflow.json).  
+A continuación se presenta su estructura, primero con una vista general y luego con el detalle nodo a nodo.
 
-El flujo está compuesto por los siguientes nodos:
-
-1. **Trigger (Diario 6 am)** → Ejecuta el flujo automáticamente cada mañana.  
-2. **Fecha Hoy–Ayer (JavaScript)** → Genera dinámicamente las fechas de hoy y ayer en formato `YYYY-MM-DD`.  
-3. **Solicitud Data HTTP** → Consulta la API pública [`exchangerate.host`](https://exchangerate.host/) para obtener el valor de USD→COP.  
-4. **Umbral Alerta (Set Node)** → Nodo manual donde se define el % de cambio que dispara la alerta.  
-5. **Comparación Valor Anterior (JavaScript)** → Calcula el cambio porcentual y lo compara con el umbral.  
-6. **Condicional Envío Alerta** → Si el cambio supera el umbral, continúa. Si no, termina.  
-7. **Enviar Mensaje Alerta (Gmail)** → Envía un correo electrónico con los detalles: precio actual, precio anterior, % cambio y umbral definido.
+### 📸 Vista General del Flujo
+![Flujo completo](./fotos/flujo_completo.png)
 
 ---
 
-## 📸 Imágenes del Flujo
+### 1️⃣ Trigger (Diario 6 am)
+- **Función:** Dispara la ejecución automática del flujo todos los días a las 6:00 a.m.  
+- **Importancia:** Permite que la consulta y análisis de la tasa de cambio sea **totalmente autónoma**.  
+![Trigger](./fotos/nodo_trigger.png)
 
-Las siguientes imágenes ilustran la estructura del flujo y sus nodos (ubicadas en la carpeta [`fotos`](./fotos)):
+---
 
-- ![Flujo completo](./fotos/flujo_completo.png)  
-- ![Detalle nodos](./fotos/nodos_detalle.png)
+### 2️⃣ Fecha Hoy–Ayer (JavaScript)
+- **Función:** Calcula dinámicamente las fechas de hoy y ayer en formato `YYYY-MM-DD`.  
+- **Importancia:** Garantiza que siempre se comparen las tasas actuales contra las del día anterior sin intervención manual.  
+![Fecha Hoy–Ayer](./fotos/nodo_fecha.png)
+
+---
+
+### 3️⃣ Solicitud Data HTTP
+- **Función:** Consulta la API pública [`exchangerate.host`](https://exchangerate.host/) para obtener el valor de USD→COP en las fechas definidas.  
+- **Importancia:** Provee los datos crudos sobre los cuales se calcula la variación.  
+![HTTP Request](./fotos/nodo_http.png)
+
+---
+
+### 4️⃣ Umbral Alerta (Set Node)
+- **Función:** Nodo manual donde se define el valor de `THRESHOLD_PCT`, que representa el % de variación que dispara la alerta.  
+- **Importancia:** Permite **personalizar la sensibilidad** del sistema según las necesidades del usuario.  
+![Umbral Alerta](./fotos/nodo_umbral.png)
+
+---
+
+### 5️⃣ Comparación Valor Anterior (JavaScript)
+- **Función:** Calcula el porcentaje de variación entre el valor actual y el del día anterior, y lo compara contra el umbral.  
+- **Importancia:** Constituye el **núcleo lógico** del flujo, pues decide si se debe o no enviar la alerta.  
+![Comparación](./fotos/nodo_comparacion.png)
+
+---
+
+### 6️⃣ Condicional Envío Alerta (IF Node)
+- **Función:** Evalúa si la variación calculada supera el umbral definido.  
+- **Importancia:** Controla la bifurcación del flujo, evitando enviar correos innecesarios.  
+![Condicional](./fotos/nodo_if.png)
+
+---
+
+### 7️⃣ Enviar Mensaje Alerta (Gmail)
+- **Función:** Envía un correo con los resultados: precio actual, precio anterior, % de variación y umbral configurado.  
+- **Importancia:** Es la **salida final del flujo**, entregando la notificación al usuario de forma clara y oportuna.  
+![Gmail](./fotos/nodo_gmail.png)
