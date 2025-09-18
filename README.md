@@ -100,7 +100,7 @@ A continuación se presenta su estructura, primero la vista general y luego el d
 - **Configuración:**  
   - Nodo: **Function**.  
   - Código: Calcula la variacion de precios, NO modificar.
-- **Importancia:** Es el **núcleo lógico** del flujo; genere datos para validar si corresponde enviar la alerta o no.  
+- **Importancia:** Es el **núcleo lógico** del flujo; genera los datos para una posterior validacion de si corresponde enviar la alerta o no.
 ![Comparación](./fotos/nodo_comparacion.png)
 
 ---
@@ -113,7 +113,7 @@ A continuación se presenta su estructura, primero la vista general y luego el d
     ```
     {{$json.changePct}} > {{$json.thresholdPct}}
     ```
-- **Importancia:** Controla la **direccion** del flujo, evitando correos innecesarios.  
+- **Importancia:** Controla la **decisión** del flujo, evitando correos innecesarios.  
 ![Condicional](./fotos/nodo_if.png)
 
 ---
