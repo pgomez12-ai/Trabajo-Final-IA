@@ -1,0 +1,224 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e687dae-479e-4d8e-ade6-22fafa9baf25",
+              "name": "THRESHOLD_PCT",
+              "value": 0.002,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        0
+      ],
+      "id": "f4f92c56-a34d-45e7-916b-9e9c53de09f8",
+      "name": "Umbral Alerta"
+    },
+    {
+      "parameters": {
+        "jsCode": "const thresholdData = $input.all()[0]?.json?.THRESHOLD_PCT * 100;\nconst dolarData = $(\"Solicitud Data HTTP\").all()[0]?.json?.quotes;\n\nconst today = Object.keys(dolarData).pop();\nconst yesterday = Object.keys(dolarData)[Object.keys(dolarData).length - 2];\n\nconst todayPrice = dolarData[today]?.USDCOP;\nconst yesterdayPrice = dolarData[yesterday]?.USDCOP;\n\nconst rateChange = ((todayPrice - yesterdayPrice) / yesterdayPrice) * 100;\n\nconst alert = Math.abs(rateChange) > thresholdData;\n\nreturn { todayPrice, yesterdayPrice, rateChange, thresholdData, alert };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "23bd7197-2ff1-4ff8-b512-9faea8cd2a1d",
+      "name": "Comparacion Valor Anterior JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ffdbe4f1-7c64-4b8e-bea9-34f8f6c0817e",
+              "leftValue": "={{ $json.alert }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "04d1b9b8-79b6-4f0a-86ec-7b504abdc148",
+      "name": "Condicional Envio Alerta"
+    },
+    {
+      "parameters": {
+        "sendTo": "pedrogomezbedoya340@gmail.com",
+        "subject": "=Alerta USD→COP ({{$json.rateChange.toFixed(4)}}%)",
+        "message": "=⚠️ Alerta USD→COP por cambio: \\\\\n\nPrecio de hoy: {{$json.todayPrice}} \\\\\nPrecio de ayer: {{$json.yesterdayPrice}}\n% Cambio: {{ $json.rateChange}}\n% Umbral: {{$json.thresholdData}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1488,
+        -64
+      ],
+      "id": "604dd15c-f0cb-4d87-93de-6f3b3ad71b13",
+      "name": "Enviar Mensaje Alerta",
+      "webhookId": "fc71e87c-0e4a-4f32-86b5-9b25b6b71c0f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eBA0aTxQx0045Gzz",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ejecutar una sola vez (Run Once for All Items)\nconst tzOffset = -5; // Bogotá UTC-5\n\nfunction formatDateLocal(date, offset) {\n  // Copiar fecha y ajustar a la zona horaria\n  const local = new Date(date.getTime() + offset * 60 * 60 * 1000);\n  return local.toISOString().split('T')[0];\n}\n\nconst now = new Date();\nconst today = formatDateLocal(now, tzOffset);\n\nconst yesterdayDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);\nconst yesterday = formatDateLocal(yesterdayDate, tzOffset);\n\nreturn [\n  {\n    json: {\n      today,\n      yesterday\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a5196d78-557e-4b1c-9961-ac6071120a19",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.exchangerate.host/timeframe?access_key=b264c3429f8bdb99e3f47cef4aca6852&currencies=USD,COP&start_date={{ $json.yesterday }}&end_date={{ $json.today }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        0
+      ],
+      "id": "9146d7cc-65bb-4933-9281-daad233a6efb",
+      "name": "Solicitud Data HTTP"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0c58515a-9c4c-4e8b-a9c1-85bf71025403",
+      "name": "Trigger: Diario 6 am"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Umbral Alerta": {
+      "main": [
+        [
+          {
+            "node": "Comparacion Valor Anterior JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comparacion Valor Anterior JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Condicional Envio Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Condicional Envio Alerta": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensaje Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Solicitud Data HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitud Data HTTP": {
+      "main": [
+        [
+          {
+            "node": "Umbral Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger: Diario 6 am": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6c154159-f686-4a23-85b5-f816a4616b8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e665d752047472274eea6ae1b10800fa50550def8fabd8a61bc07213e1023bc8"
+  },
+  "id": "ORVlTicwH6ApyZCE",
+  "tags": []
+}
