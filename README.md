@@ -100,13 +100,13 @@ A continuación se presenta su estructura, primero la vista general y luego el d
 - **Configuración:**  
   - Nodo: **Function**.  
   - Código: Calcula la variacion de precios, NO modificar.
-- **Importancia:** Es el **núcleo lógico** del flujo; decide si corresponde enviar la alerta.  
+- **Importancia:** Es el **núcleo lógico** del flujo; genere datos para validar si corresponde enviar la alerta o no.  
 ![Comparación](./fotos/nodo_comparacion.png)
 
 ---
 
 ### 6️⃣ Condicional Envío Alerta (IF Node)
-- **Función:** Evalúa si la variación calculada **supera el umbral** definido.  
+- **Función:** Evalúa si la variación calculada **supera el umbral** definido y si lo supera envia el correo.  
 - **Configuración:**  
   - Nodo: **IF**.  
   - Condición:  
