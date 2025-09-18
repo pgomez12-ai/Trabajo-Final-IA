@@ -45,7 +45,7 @@ El flujo completo se encuentra exportado en [`Workflow.json`](./Workflow.json).
 A continuación se presenta su estructura, primero con una vista general y luego con el detalle nodo a nodo.
 
 ### 📸 Vista General del Flujo
-![Flujo completo](./fotos/flujo_completo.png)
+![Flujo completo](./fotos/flujo_completo_envio.png)
 
 ---
 
@@ -57,7 +57,7 @@ A continuación se presenta su estructura, primero con una vista general y luego
 ---
 
 ### 2️⃣ Fecha Hoy–Ayer (JavaScript)
-- **Función:** Calcula dinámicamente las fechas de hoy y ayer en formato `YYYY-MM-DD`.  
+- **Función:** Calcula dinámicamente las fechas de hoy y ayer en formato `YYYY-MM-DD`.
 - **Importancia:** Garantiza que siempre se comparen las tasas actuales contra las del día anterior sin intervención manual.  
 ![Fecha Hoy–Ayer](./fotos/nodo_fecha.png)
 
@@ -86,12 +86,18 @@ A continuación se presenta su estructura, primero con una vista general y luego
 
 ### 6️⃣ Condicional Envío Alerta (IF Node)
 - **Función:** Evalúa si la variación calculada supera el umbral definido.  
-- **Importancia:** Controla la bifurcación del flujo, evitando enviar correos innecesarios.  
+- **Importancia:** Controla la separación del flujo, evitando enviar correos innecesarios.  
 ![Condicional](./fotos/nodo_if.png)
 
 ---
 
 ### 7️⃣ Enviar Mensaje Alerta (Gmail)
+
 - **Función:** Envía un correo con los resultados: precio actual, precio anterior, % de variación y umbral configurado.  
 - **Importancia:** Es la **salida final del flujo**, entregando la notificación al usuario de forma clara y oportuna.  
-![Gmail](./fotos/nodo_gmail.png)
+
+📸 **Configuración del nodo en N8N**  
+![Nodo Gmail](./fotos/nodo_gmail.png)
+
+📨 **Ejemplo de correo recibido**  
+![Correo recibido](./fotos/mensaje_gmail.png)
